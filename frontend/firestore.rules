@@ -1,0 +1,45 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+    // Users can read and write their own user document
+    match /users/{userId} {
+      allow read, write: if request.auth != null && request.auth.uid == userId;
+    }
+    
+    // Allow authenticated users to read programme data
+    match /programmes/{programmeId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (resource == null || 
+         resource.data.createdBy == request.auth.uid ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'programme_manager']);
+    }
+    
+    // Allow authenticated users to read beneficiary data
+    match /beneficiaries/{beneficiaryId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (resource == null || 
+         resource.data.createdBy == request.auth.uid ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'beneficiary_coordinator']);
+    }
+    
+    // Allow authenticated users to read evidence data
+    match /evidence/{evidenceId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (resource == null || 
+         resource.data.createdBy == request.auth.uid ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'evidence_specialist']);
+    }
+    
+    // Allow authenticated users to read export data
+    match /exports/{exportId} {
+      allow read: if request.auth != null;
+      allow write: if request.auth != null && 
+        (resource == null || 
+         resource.data.createdBy == request.auth.uid ||
+         get(/databases/$(database)/documents/users/$(request.auth.uid)).data.role in ['admin', 'programme_manager']);
+    }
+  }
+}
