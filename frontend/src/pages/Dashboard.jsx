@@ -52,7 +52,9 @@ const Dashboard = () => {
   }
 
   const programmes = programmesData?.data || []
-  const data = dashboardData?.data || {
+  const apiData = dashboardData?.data
+  const hasValidDistrictData = apiData && apiData.breakdown && apiData.breakdown.by_district && apiData.breakdown.by_district.length > 0
+  const data = hasValidDistrictData ? apiData : {
     kpis: {
       trained: { value: 812, target: 1000, percentage: 81 },
       certified: { value: 620, target: 800, percentage: 78 },

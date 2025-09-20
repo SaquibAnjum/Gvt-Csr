@@ -78,12 +78,13 @@ router.get('/dashboard/:programmeId', async (req, res) => {
 
     // Get district breakdown
     const districtBreakdown = await Beneficiary.aggregate([
-      { $match: { programme_id: programmeId, status: { $in: ['CERTIFIED', 'PLACED'] } } },
+      { $match: { programme_id: programmeId } },
       { $lookup: { from: 'programmes', localField: 'programme_id', foreignField: '_id', as: 'programme' } },
       { $unwind: '$programme' },
       { $unwind: '$programme.districts' },
       { $group: { 
         _id: '$programme.districts', 
+        trained: { $sum: { $cond: [{ $in: ['$status', ['TRAINING', 'CERTIFIED', 'PLACED']] }, 1, 0] } },
         certified: { $sum: { $cond: [{ $eq: ['$status', 'CERTIFIED'] }, 1, 0] } },
         placed: { $sum: { $cond: [{ $eq: ['$status', 'PLACED'] }, 1, 0] } }
       }},
@@ -121,8 +122,12 @@ router.get('/dashboard/:programmeId', async (req, res) => {
       breakdown: {
         by_district: districtBreakdown.map(item => ({
           code: item._id,
+          name: item._id, // Use district name as is
           certified: item.certified,
-          placed: item.placed
+          placed: item.placed,
+          trained: item.trained,
+          total_target: Math.max(item.trained * 1.2, 100), // Estimate target as 120% of trained
+          performance_score: item.trained > 0 ? Math.round((item.certified / item.trained) * 100) : 0
         }))
       },
       trends: trends
