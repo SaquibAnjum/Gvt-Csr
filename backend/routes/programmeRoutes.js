@@ -49,9 +49,7 @@ router.get('/', async (req, res) => {
     const programmes = await Programme.find(filter)
       .sort({ created_at: -1 })
       .limit(limit * 1)
-      .skip((page - 1) * limit)
-      .populate('targets', 'metric target_value')
-      .populate('funding_rules', 'rule_type amount currency active');
+      .skip((page - 1) * limit);
 
     const total = await Programme.countDocuments(filter);
 
@@ -75,9 +73,7 @@ router.get('/', async (req, res) => {
 // Get programme by ID
 router.get('/:id', async (req, res) => {
   try {
-    const programme = await Programme.findById(req.params.id)
-      .populate('targets', 'metric target_value')
-      .populate('funding_rules', 'rule_type amount currency conditions active');
+    const programme = await Programme.findById(req.params.id);
 
     if (!programme) {
       return res.status(404).json({

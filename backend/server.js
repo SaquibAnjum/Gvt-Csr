@@ -14,7 +14,7 @@ const evidenceRoutes = require('./routes/evidenceRoutes');
 const exportRoutes = require('./routes/exportRoutes');
 
 const app = express();
-const PORT = process.env.PORT || 5000;
+const PORT = process.env.PORT || 8000;
 
 // Connect to MongoDB
 connectDB();

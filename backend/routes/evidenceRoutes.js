@@ -5,6 +5,7 @@ const Beneficiary = require('../models/Beneficiary');
 const ProgressRecord = require('../models/ProgressRecord');
 const PlacementRecord = require('../models/PlacementRecord');
 const AuditEvent = require('../models/AuditEvent');
+const Programme = require('../models/Programme');
 const { v4: uuidv4 } = require('uuid');
 
 // Generate evidence bundle

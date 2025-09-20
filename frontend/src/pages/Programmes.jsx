@@ -322,7 +322,11 @@ const CreateProgrammeModal = ({ onClose, onSuccess }) => {
         created_by: 'current-user-id' // In real app, get from auth context
       })
     })
-    if (!response.ok) throw new Error('Failed to create programme')
+    
+    if (!response.ok) {
+      const errorData = await response.json()
+      throw new Error(errorData.error || 'Failed to create programme')
+    }
     return response.json()
   }, {
     onSuccess: () => {
